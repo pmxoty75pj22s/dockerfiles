@@ -1,0 +1,25 @@
+#!/bin/sh
+SPAWN_FCGI="/usr/bin/spawn-fcgi"
+DAEMON="/usr/sbin/fcgiwrap"
+DAEMON_OPTS="-f"
+FCGI_SOCKET_DIR=/var/run/fcgiwrap
+FCGI_SOCKET="$FCGI_SOCKET_DIR/fcgiwrap.sock"
+FCGI_USER="www-data"
+FCGI_GROUP="www-data"
+FCGI_SOCKET_OWNER="www-data"
+FCGI_SOCKET_GROUP="www-data"
+FCGI_SOCKET_MODE=666
+if [ ! -e $FCGI_SOCKET_DIR ]; then
+    mkdir -p $FCGI_SOCKET_DIR
+    chown $FCGI_SOCKET_OWNER:$FCGI_SOCKET_GROUP $FCGI_SOCKET_DIR
+fi;
+
+ARGS="-n"
+ARGS="$ARGS -s $FCGI_SOCKET"
+ARGS="$ARGS -u $FCGI_USER"
+ARGS="$ARGS -U $FCGI_SOCKET_OWNER"
+ARGS="$ARGS -g $FCGI_GROUP"
+ARGS="$ARGS -G $FCGI_SOCKET_GROUP"
+ARGS="$ARGS -M $FCGI_SOCKET_MODE"
+exec $SPAWN_FCGI $ARGS -- $DAEMON $DAEMON_OPTS
+
